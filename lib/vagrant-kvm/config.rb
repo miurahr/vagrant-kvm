@@ -16,11 +16,6 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :name
 
-      # The defined network adapters.
-      #
-      # @return [Hash]
-      attr_reader :network_adapters
-
       # The VM image format
       #
       # @return [String]
@@ -57,12 +52,38 @@ module VagrantPlugins
       #
       # @return [String]
       attr_accessor :core_number
+
+      # VNC parameters
+      #
       attr_accessor :vnc_port
       attr_accessor :vnc_autoport
       attr_accessor :vnc_password
+
+      # Domain machine type
+      #
+      # list are retrieved by `qemu -machine help`
+      # default: pc-1.1
+      #
+      # @return [String]
       attr_accessor :machine_type
+
+      # Network device model
+      #
+      # default: virtio
+      # valid types: "virtio", "i82551", "i82557b", "i82559er", "ne2k_pci",
+      #  "ne2k_isa", "pcnet", "rtl8139", "e1000", "smc91c111", "lance", "mcf_fec"
+      #
+      # @return [String]
       attr_accessor :network_model
+
+      # Video device model
+      #
+      # @return [String]
       attr_accessor :video_model
+
+      # enable sound
+      #
+      # @return [Boolean]
       attr_accessor :sound
       attr_accessor :virtio_rng
 
@@ -71,6 +92,10 @@ module VagrantPlugins
       #
       # @return [String]
       attr_accessor :disk_bus
+
+      # use pause instead of suspend
+      #
+      # @return [Boolean]
       attr_accessor :force_pause
 
       def initialize
