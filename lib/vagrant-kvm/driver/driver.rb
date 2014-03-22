@@ -36,10 +36,13 @@ module VagrantPlugins
           # This should be configurable
           @pool_name = "vagrant"
           @virsh_path = "virsh"
+          @bridged_network = nil
+          @bridge_number = 0
 
           load_kvm_module!
           connect_libvirt_qemu!
           init_storage_pool!
+          check_vagrant_networks
 
           if @uuid
             # Verify the VM exists, and if it doesn't, then don't worry
@@ -167,7 +170,6 @@ module VagrantPlugins
           # Get the network if it exists
           network_name = config[:name]
           hosts = config[:hosts]
-          @logger.info("empty host!") unless hosts
           begin
             network = @conn.lookup_network_by_name(network_name)
             definition = Util::NetworkDefinition.new(network_name,
@@ -206,6 +208,8 @@ module VagrantPlugins
             else # network is not active
               @logger.info "Recreating network config for #{network_name}"
               network.undefine
+              @bridge_number = @bridge_number + 1
+              definition.update(:bridge => 'vagrant'+ @bridge_number.to_s)
               network = define_network(definition)
             end
 
@@ -217,6 +221,34 @@ module VagrantPlugins
             @logger.debug("with\n#{definition.as_xml}")
             network = define_network(definition)
           end
+        end
+
+        def enable_bridged_network(config)
+          network_name = 'vagrant-public'
+          network = create_bridged_network(network_name)
+          if network
+            @bridged_network = network_name
+          end
+        end
+
+        def create_bridged_network(network_name)
+          begin
+            network = @conn.lookup_network_by_name(network_name)
+            network.create unless network.active?
+          rescue Libvirt::RetrieveError
+            definition = Util::NetworkDefinition.new(network_name)
+            @bridge_number = @bridge_number + 1
+            definition.update(
+              :name    => network_name,
+              :forward => "bridge",
+              :forward_dev => "eth0",
+              :bridge  => "vagrant"+@bridge_number.to_s,
+              :base_ip => "192.168.100.1",
+              :netmask => "255.255.255.0",
+            )
+            network = define_network(definition)
+          end
+          network
         end
 
         def define_network(definition)
@@ -465,6 +497,11 @@ module VagrantPlugins
           @conn.define_domain_xml(xml)
         end
 
+        def get_max_bridge_num
+          # fixme need some logic?
+          @bridge_number
+        end
+
         # Starts the virtual machine.
         def start
           domain = @conn.lookup_domain_by_uuid(@uuid)
@@ -709,6 +746,20 @@ module VagrantPlugins
           rescue Libvirt::RetrieveError
             # storage pool doesn't exist yet
           end
+        end
+
+        def check_vagrant_networks
+          vagrantnum = [0]
+          begin
+            nets = @conn.list_all_networks
+            nets.each do |net|
+              if /^vagrant([0-9]+)$/ =~ net.bridge_name
+                vagrantnum << $1.to_i
+              end
+            end
+          rescue Libvirt::RetrieveError
+          end
+          @bridge_number = vagrantnum.max.to_i
         end
       end
     end

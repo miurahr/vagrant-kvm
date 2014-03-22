@@ -24,6 +24,13 @@ module VagrantPlugins
               :network => item.elements["source"].attributes["network"].to_s
             }
           end
+          # list bridged public interface
+          doc.elements.each("//devices/interface[@type='bridge']") do |item|
+            nics << {
+              :type => :bridge,
+              :source => item.elements["source"].attributes["bridge"].to_s
+            }
+          end
           nics
         end
 
@@ -66,16 +73,29 @@ module VagrantPlugins
             mac         = intf.elements["mac"].attributes["address"]
             type        = intf.attributes["type"]
             model       = intf.elements["model"].attributes["type"]
+
             if network == 'vagrant' then
               update({:network_model => model})
             else
-              nics <<  {
-                :network => network,
-                :mac     => format_mac(mac),
-                :type    => type,
-                :model   => model,
-                # XXX: fixme for supprting bridge
-              }
+              case type
+              when 'user'
+                nics << { :type => 'user' }
+              when 'network'
+                nics <<  {
+                  :type    => 'network',
+                  :network => network,
+                  :mac     => format_mac(mac),
+                  :model   => model,
+                }
+              when 'bridge'
+                bridge      = intf.elements["source"].attributes["bridge"]
+                nics << {
+                  :type    => 'bridge',
+                  :source  => bridge,
+                  :mac     => format_mac(mac),
+                  :model   => model,
+                }
+              end
             end
           end
           update({ :nics => nics })
@@ -139,9 +159,14 @@ module VagrantPlugins
             nic[:model] = 'virtio' unless nic[:model]
 
             e = REXML::Element.new('interface')
+            if nic[:type] == 'network'
+              e.add_element('source', {'network' => nic[:network]})
+            elsif nic[:type] == 'bridge'
+              e.add_element('source', {'bridge' => nic[:source]})
+              e.add_element('target', {'dev' => nic[:name]})
+            end
             e.add_attributes({'type' => nic[:type]})
             e.add_element('mac', {'address' => nic[:mac]})
-            e.add_element('source', {'network' => nic[:network]})
             e.add_element('model', {'type' => nic[:model]})
             e.add_element('address',{'type' => 'pci','domain' => '0x0000', 'bus' => '0x00',
              'slot' => '0x0a', 'function' => "0x%x" % funcid})
