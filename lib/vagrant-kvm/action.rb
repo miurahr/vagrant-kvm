@@ -1,5 +1,4 @@
 require "pathname"
-
 require "vagrant/action/builder"
 
 module VagrantPlugins
@@ -27,7 +26,6 @@ module VagrantPlugins
           if Vagrant::VERSION >= "1.3.0"
             b.use WaitForCommunicator, [:running]
           end
-          b.use ShareFolders
           b.use Customize, "post-boot"
         end
       end
@@ -298,7 +296,6 @@ module VagrantPlugins
       autoload :ResumeNetwork, action_root.join("resume_network")
       autoload :SetName, action_root.join("set_name")
       autoload :SetupPackageFiles, action_root.join("setup_package_files")
-      autoload :ShareFolders, action_root.join("share_folders")
       autoload :Suspend, action_root.join("suspend")
     end
   end

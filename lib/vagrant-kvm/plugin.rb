@@ -39,7 +39,7 @@ module VagrantPlugins
         Cap::MountP9
       end
 
-      synced_folder("p9", 20) do
+      synced_folder("9p", 20) do
         require_relative "synced_folder"
         SyncedFolder
       end

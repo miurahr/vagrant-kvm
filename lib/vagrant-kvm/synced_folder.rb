@@ -20,6 +20,10 @@ module VagrantPlugins
         end
 
         driver(machine).share_folders(defs)
+
+        if driver(mahchine).redhat? or driver(machine).suse? or driver(machine).arch?
+          work_around_selinux_libvirt_bug!(defs)
+        end
       end
 
       def enable(machine, folders, _opts)
@@ -43,6 +47,18 @@ module VagrantPlugins
       end
 
       protected
+
+      def work_around_selinux_libvirt_bug!(defs)
+        begin
+          defs.each do |share|
+            target = share[:hostpath]
+            system('sudo semanage fcontext -a -t virt_content_t "#{target}(/.*)?"')
+            system('sudo restorecon -R #{target}')
+          end
+        rescue
+          # ignore it, maybe no policycoreutils-python package
+        end
+      end
 
       # This is here so that we can stub it for tests
       def driver(machine)
