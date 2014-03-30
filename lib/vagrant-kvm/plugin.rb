@@ -46,7 +46,16 @@ module VagrantPlugins
 
       # This initializes the internationalization strings.
       def self.setup_i18n
-        I18n.load_path << File.expand_path("locales/en.yml", ProviderKvm.source_root)
+        lang = ENV['LANG']
+        case lang
+        when /^en/
+          catalog = "locales/en.yml"
+        when /^ja/
+          catalog = "locales/ja.yml"
+        else
+          catalog = "locales/en.yml"
+        end
+        I18n.load_path << File.expand_path(catalog, ProviderKvm.source_root)
         I18n.reload!
       end
 
