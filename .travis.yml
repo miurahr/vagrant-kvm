@@ -10,10 +10,9 @@ rvm:
   - 2.0.0
 script:
   - export rvmsudo_secure_path=1
-  - export VAGRANT_FORCE_BUNDLER=1
   - rvmsudo ruby --version
   - rvmsudo gem --version
   - rvmsudo bundle --version
   - rvmsudo bundle exec rake box:add
-  - rvmsudo bundle exec rake spec
+  - rvmsudo env DEBUG=1 VAGRANT_FORCE_BUNDLER=1 bundle exec rake spec
   - rvmsudo bundle exec rake box:remove
