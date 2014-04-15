@@ -19,14 +19,7 @@ RSpec::Core::RakeTask.new
 namespace :box do
   desc 'Downloads and adds vagrant box for testing.'
   task :add do
-    system 'bundle exec vagrant box add vagrant-kvm-specs http://cloud-images.ubuntu.com/vagrant/precise/current/precise-server-cloudimg-amd64-vagrant-disk1.box'
-  end
-
-  desc 'Prepares VirtualBox box for usage with KVM.'
-  task :prepare do
-    system 'bundle exec vagrant plugin install vagrant-mutate'
-    system 'bundle exec vagrant mutate vagrant-kvm-specs kvm'
-    system 'bundle exec vagrant box remove vagrant-kvm-specs virtualbox'
+    system 'bundle exec vagrant box add vagrant-kvm-specs http://vagrant-kvm-boxes.s3.amazonaws.com/vagrant-kvm-specs.box'
   end
 
   desc 'Removes testing vagrant box.'

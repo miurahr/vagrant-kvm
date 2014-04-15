@@ -11,4 +11,6 @@ script:
   - rvmsudo ruby --version
   - rvmsudo gem --version
   - rvmsudo bundle --version
-  - rvmsudo bundle exec rspec spec/vagrant-kvm/
+  - rvmsudo bundle exec rake box:add
+  - rvmsudo bundle exec rake spec
+  - rvmsudo bundle exec rake box:remove
