@@ -14,5 +14,5 @@ script:
   - rvmsudo gem --version
   - rvmsudo bundle --version
   - rvmsudo bundle exec rake box:add
-  - rvmsudo env DEBUG=1 VAGRANT_FORCE_BUNDLER=1 bundle exec rake spec
+  - rvmsudo env DEBUG=1 bundle exec rake spec
   - rvmsudo bundle exec rake box:remove

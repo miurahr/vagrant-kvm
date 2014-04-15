@@ -32,8 +32,11 @@ module VagrantKvmHelper
   private
 
   def silent_exec(cmd)
-    cmd << ' 2>&1' unless !!ENV['DEBUG']
-    `#{cmd}`
+    gemfile = File.dirname(__FILE__)+"../../../Gemfile"
+    cmdline = 'VAGRANT_FORCE_BUNDLER=1 BUNDLE_GEMFILE='+gemfile+' '
+    cmdline << cmd
+    cmdline << ' 2>&1' unless !!ENV['DEBUG']
+    `#{cmdline}`
   end
 
 end # VagrantKvmHelper
