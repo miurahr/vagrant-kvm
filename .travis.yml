@@ -13,6 +13,7 @@ script:
   - rvmsudo ruby --version
   - rvmsudo gem --version
   - rvmsudo bundle --version
+  - rvmsudo bundle install
   - rvmsudo bundle exec rake box:add
   - rvmsudo env DEBUG=1 bundle exec rake spec
   - rvmsudo bundle exec rake box:remove
