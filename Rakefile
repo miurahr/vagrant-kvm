@@ -24,7 +24,7 @@ namespace :box do
 
   desc 'Removes testing vagrant box.'
   task :remove do
-    system 'bundle exec vagrant box remove vagrant-kvm-specs kvm'
+    system 'bundle exec vagrant box remove vagrant-kvm-specs --provider=kvm'
   end
 end
 
