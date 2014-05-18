@@ -27,7 +27,12 @@ module VagrantPlugins
             @env[:machine].config.vm.synced_folders.each do |id, data|
               next if data[:disabled]
 
-              data[:nfs] = true unless @env[:machine].provider_config.enable_virtfs
+              # Here should be called AFTER boot
+              unless (@env[:machine].provider_config.virtfs &&
+                      @env[:machine].guest.capability?(:p9share_module_installed))
+                # fall back to NFS
+                data[:nfs] = true
+              end
 
               if data[:nfs]
                 # This to prevent overwriting the actual shared folders data

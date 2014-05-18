@@ -210,6 +210,8 @@ image. This is slower but allows multiple VMs to be booted at the same time.
   `pause` regardless of this.
 * `virtio_rng` - boolean for optional virtio device of random number generator.
   QEMU 1.3.0 and after support this device. default `false`
+* `virtfs` - boolean for indicating whether box support virtfs(plan9) share or not.
+  Every box which don't support virtfs, it should be set to false in Vagrantfile inside box.
 
 
 ## Comparison with [Vagrant-libvirt](https://github.com/pradels/vagrant-libvirt)

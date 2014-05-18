@@ -18,7 +18,7 @@ module VagrantPlugins
         end
 
         def using_nfs?
-            @machine.config.vm.synced_folders.any? { |_, opts| opts[:type] == :nfs }
+          @machine.config.vm.synced_folders.any? { |_, opts| opts[:type] == :nfs } || !@machine.provider_config.virtfs
         end
 
         # Returns the IP address of the host

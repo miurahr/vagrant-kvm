@@ -4,8 +4,7 @@ module VagrantPlugins
   module ProviderKvm
     class SyncedFolder < Vagrant.plugin("2", :synced_folder)
       def usable?(machine)
-        # These synced folders only work if the provider if KVM
-        machine.provider_name == :kvm
+        machine.provider_name == :kvm && machine.provider_config.virtfs
       end
 
       def prepare(machine, folders, _opts)
@@ -27,19 +26,21 @@ module VagrantPlugins
       end
 
       def enable(machine, folders, _opts)
-        # Go through each folder and mount
-        machine.ui.info("mounting p9 share in guest")
-        # Only mount folders that have a guest path specified.
-        mount_folders = {}
-        folders.each do |id, opts|
-          mount_folders[id] = opts.dup if opts[:guestpath]
-        end
-        common_opts = {
-          :version => '9p2000.L',
-        }
-        # Mount the actual folder
-        machine.guest.capability(
+        if machine.guest.capability?(:p9_module_installed)
+          # Go through each folder and mount
+          machine.ui.info("mounting p9 share in guest")
+          # Only mount folders that have a guest path specified.
+          mount_folders = {}
+          folders.each do |id, opts|
+            mount_folders[id] = opts.dup if opts[:guestpath]
+          end
+          common_opts = {
+            :version => '9p2000.L',
+          }
+          # Mount the actual folder
+          machine.guest.capability(
             :mount_p9_shared_folder, mount_folders, common_opts)
+        end
       end
 
       def cleanup(machine, opts)

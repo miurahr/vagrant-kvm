@@ -35,8 +35,13 @@ module VagrantPlugins
       end
 
       guest_capability("linux", "mount_p9_shared_folder") do
-        require_relative "cap/mount_p9"
+        require_relative "cap/linux_mount_p9"
         Cap::MountP9
+      end
+
+      guest_capability("linux", "p9_module_installed") do
+        require_relative "cap/linux_p9_client"
+        Cap::P9Client
       end
 
       synced_folder("p9", 20) do

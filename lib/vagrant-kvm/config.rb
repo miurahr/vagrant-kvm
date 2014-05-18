@@ -98,7 +98,7 @@ module VagrantPlugins
         @disk_bus         = UNSET_VALUE
         @sound            = UNSET_VALUE
         @force_pause      = UNSET_VALUE
-        @enable_virtfs    = UNSET_VALUE
+        @virtfs           = UNSET_VALUE
         @virtio_rng       = UNSET_VALUE
       end
 
@@ -181,7 +181,7 @@ module VagrantPlugins
         @disk_bus = nil if @disk_bus == UNSET_VALUE
         @sound = false if @sound == UNSET_VALUE
         @force_pause = false if @force_pause == UNSET_VALUE
-        @enable_virtfs = false if @enable_virtfs == UNSET_VALUE
+        @virtfs  = true if @virtfs == UNSET_VALUE
         @virtio_rng = nil if @virtio_rng == UNSET_VALUE
       end
 
