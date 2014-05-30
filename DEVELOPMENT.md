@@ -61,12 +61,12 @@ There are two `Vagrantfile` to help developers.
 
 ## Tests
 
-We use Rspec and Travis-CI for continous integration and unit test.
+We use Vagrant-spec, rspec and Travis-CI for acceptance test, unit test and continous integration.
 
 Tests are located in `spec` directory.
 Every PR should be tested and passes Travis-CI test before merging.
 
-## Specs
+### Specs
 
 To run specs, you first need to add and prepare the Vagrant box which will be used.
 
@@ -74,18 +74,73 @@ To run specs, you first need to add and prepare the Vagrant box which will be us
 $ bundle exec rake box:add
 $ bundle exec rake box:prepare
 ```
-
 Once box is added and prepared, you can run specs:
 
 ```bash
 $ bundle exec rspec spec/vagrant-kvm/
 ```
 
-When you're done, feel free to remove the box.
-
+When you are done, feel free to remove the box.
 ```bash
 $ bundle exec rake box:remove
 ```
+
+### Acceptance tests
+
+Vagrant-KVM uses Vagrant-Spec, tool and library for testing Vagrant plugins.
+To run vagrant-spec, you need to install dependency libraries using `bunler`.
+
+```bash
+$ bundle install
+```
+
+Once installed dependency, you can run acceptance test using following command.
+
+```bash
+$ bundle exec vagrant-spec test
+```
+
+Running the full suite of acceptance tests can be horribly long.
+It is recommended you only run a component that you modified at a time.
+To view all of testable components, run `vagrant-spec components`
+You might see something like the following:
+
+```bash
+$ bundle exec vagrant-spec components
+cli/box
+cli/init
+cli/plugin
+cli/version
+provider/kvm/basic
+provider/kvm/network/forwarded_port
+provider/kvm/network/private_network
+provider/kvm/package
+provider/kvm/provisioner/chef-solo
+provider/kvm/provisioner/puppet
+provider/kvm/provisioner/shell
+provider/kvm/synced_folder
+provider/kvm/synced_folder/nfs
+provider/kvm/synced_folder/rsync
+```
+
+Choose a component to run, and run it:
+
+```bash
+$ vagrant-spec test --components provider/kvm/basic
+```
+
+That component will be tested.
+
+### Travis-CI
+
+All commits and PRs are tested with Travis-CI on Vagrant-KVM project.
+All results are automatically showed as Github project top page logo and
+PR status color(Green/Yellow/Red).
+
+You can see it directly on https://travis-ci.org/adrahon/vagrant-kvm
+
+If your PR indicate Yellow or Red, please update your request, or adding comment
+to explain a reson why it is not passed but can be ignored.
 
 ## Milestones and versions
 
@@ -148,9 +203,4 @@ Once you’re ready:
 * Check your PR is passed on Travis
 
 * If not, fix your commit and push to your repository: git push your_remote awesome_feature
-
-## Travis-CI
-
-TBD
-
 
